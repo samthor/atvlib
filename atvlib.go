@@ -90,9 +90,9 @@ func (m *AppleTVLink) Do(target string, header http.Header, content []byte) erro
 }
 
 // DoPlay asks the Apple TV to play the content at the given address.
-func (m *AppleTVLink) DoPlay(address string) err {
+func (m *AppleTVLink) DoPlay(address string) error {
 	data := fmt.Sprintf("Content-Location: %s\r\nStart-Position: 0\r\n", address)
-	err = m.Do("/play", nil, []byte(data))
+	return m.Do("/play", nil, []byte(data))
 }
 
 // Idle waits until the HTTP connection to the Apple TV causes an EOF.
