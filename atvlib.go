@@ -36,6 +36,9 @@ func NewAppleTVLink(host string) (m *AppleTVLink, err error) {
 	return
 }
 
+// Perform a device request. Target is in the form "/play", "/cmd", etc. Headers are optional
+// headers passed to the request, and content is sent explicitly as POST content.
+// This method returns an error if the return status is not in the 2xx range.
 func (m *AppleTVLink) Do(target string, header http.Header, content []byte) error {
 	log.Printf("control req: %s => %s (clen=%d)", target, header, len(content))
 	_, err := fmt.Fprintf(m.cn, fmt.Sprintf("POST %s HTTP/1.1\r\n", target))
@@ -86,6 +89,13 @@ func (m *AppleTVLink) Do(target string, header http.Header, content []byte) erro
 	panic("should not get here")
 }
 
+// DoPlay asks the Apple TV to play the content at the given address.
+func (m *AppleTVLink) DoPlay(address string) err {
+	data := fmt.Sprintf("Content-Location: %s\r\nStart-Position: 0\r\n", address)
+	err = m.Do("/play", nil, []byte(data))
+}
+
+// Idle waits until the HTTP connection to the Apple TV causes an EOF.
 func (m *AppleTVLink) Idle() {
 	_, _, err := m.r.ReadLine()
 	if err != io.EOF {
@@ -94,6 +104,8 @@ func (m *AppleTVLink) Idle() {
 	log.Printf("control EOF, idle done")
 }
 
+// Return the net.TCPAddr of the local-end of this link. Useful for finding the local address the
+// device could dial back to, for e.g., serving media via HTTP.
 func (m *AppleTVLink) LocalAddr() net.TCPAddr {
 	ptr := m.cn.LocalAddr().(*net.TCPAddr)
 	addr := *ptr
@@ -101,6 +113,7 @@ func (m *AppleTVLink) LocalAddr() net.TCPAddr {
 	return addr
 }
 
+// Close this link. Probably optional.
 func (m *AppleTVLink) Close() {
 	m.cn.Close()
 }

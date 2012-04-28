@@ -49,9 +49,8 @@ func main() {
 	address := fmt.Sprintf("http://%s%s", local.String(), SUFFIX)
 	log.Printf("serving at: %s", address)
 
-	// Send PLAY.
-	data := fmt.Sprintf("Content-Location: %s\r\nStart-Position: 0\r\n", address)
-	err = link.Do("/play", nil, []byte(data))
+	// Play the file that we're now serving.
+	err = link.DoPlay(address)
 	if err != nil {
 		panic(err)
 	}
