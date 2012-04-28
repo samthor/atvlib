@@ -19,7 +19,7 @@ type AppleTVLink struct {
 }
 
 func NewAppleTVLink(host string) (m *AppleTVLink, err error) {
-	cn, err := net.Dial("tcp", *target)
+	cn, err := net.Dial("tcp", host)
 	if err != nil {
 		return
 	}
