@@ -12,21 +12,21 @@ import (
 
 const SUFFIX = "/atv.mp4"
 
-var path = flag.String("path", "", "path to .mp4 (or other valid format) to play")
 var target = flag.String("target", "apple-tv.local:7000", "appletv to connect to")
 
 func main() {
 	flag.Parse()
-	if *path == "" {
-		log.Fatalf("fatal; must specify -path")
+	if flag.NArg() != 1 {
+		log.Fatalf("fatal; expected filename")
 	}
+	path := flag.Args()[0]
 
 	// Create a temp folder, and symlink to our target.
 	// TODO: If this is killed with ctrl-c, which is usual behaviour, then the deferred
 	// remove may not occur. Perhaps we need to intercept signals (but this is weird).
 	servepath, _ := ioutil.TempDir("", "aplay")
-	filepath, _ := filepath.Abs(*path)
-	err := os.Symlink(filepath, servepath+SUFFIX)
+	path, _ = filepath.Abs(path)
+	err := os.Symlink(path, servepath+SUFFIX)
 	if err != nil {
 		panic(err)
 	}
