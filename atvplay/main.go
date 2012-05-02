@@ -7,6 +7,7 @@ import (
 	"io/ioutil"
 	"log"
 	"os"
+	"time"
 	"path/filepath"
 )
 
@@ -53,6 +54,13 @@ func main() {
 	err = link.DoPlay(address)
 	if err != nil {
 		panic(err)
+	}
+
+	// TODO: This is a horrible hack to keep the AppleTV awake. It possibly stops listening to
+	// clients if it has not received data in some time.
+	c := time.Tick(10 * time.Second)
+	for _ = range c {
+		link.Do("/noop", nil, nil)
 	}
 
 	// Wait for the Apple TV to EOF!
